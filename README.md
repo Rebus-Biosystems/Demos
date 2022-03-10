@@ -9,6 +9,8 @@ A repository to host a collection python-based demos
     - python -m pip install --user virtualenv 
     - python -m venv env_demo
     - (Activate the environment)
+      - Windows:  .\env_demo\Scripts\activate
+      - Mac: Source/Scripts/Activate 
     - pip3 install "napari[all]"
     - pip3 install -r requirements.txt 
 
