@@ -10,7 +10,7 @@ A repository to host a collection python-based demos
     - python -m venv env_demo
     - (Activate the environment)
       - Windows:  .\env_demo\Scripts\activate
-      - Mac: Source/Scripts/Activate 
+      - Mac: env_demo/Source/Scripts/Activate 
     - pip3 install "napari[all]"
     - pip3 install -r requirements.txt 
 
