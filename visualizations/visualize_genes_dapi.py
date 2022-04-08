@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 nuclei_stitched = cvtColor(nuclei_stitched, COLOR_BGR2GRAY)
 
             viewer.add_image(nuclei_stitched,\
-                scale=(4,4), colormap="gray", blending="additive", opacity=0.5\
+                scale=(4,4), colormap="gray_r", blending="additive", opacity=1\
                     )
         
         for target in gene_list[0:]:
