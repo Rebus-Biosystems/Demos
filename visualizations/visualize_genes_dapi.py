@@ -9,6 +9,8 @@ import glob
 from napari import Viewer, gui_qt
 import random
 from cv2 import imread, cvtColor, COLOR_BGR2GRAY
+import dask.array as da
+import zarr 
 
 # PARAMETERS
 SHOW_FOV_GRID = False           
@@ -85,6 +87,7 @@ if __name__ == "__main__":
             dapi_stitched = os.path.join(stitched_image_folder, "nuclei_stitched_coarse_cycle_1.tif")
 
         if os.path.isfile(dapi_stitched):
+            print("Loading the DAPI image")
             nuclei_stitched = imread(dapi_stitched)
             if len(nuclei_stitched.shape)>1:
                 nuclei_stitched = cvtColor(nuclei_stitched, COLOR_BGR2GRAY)
@@ -92,6 +95,42 @@ if __name__ == "__main__":
             viewer.add_image(nuclei_stitched,\
                 scale=(4,4), colormap="gray_r", blending="additive", opacity=1\
                     )
+        
+        zarr_nuclei_stitched_filepath = os.path.join(stitched_image_folder, "nuclei_stitched_Cycle_1.zarr")
+        if os.path.isdir(zarr_nuclei_stitched_filepath):
+            print("Loading the DAPI Zarr image")
+            nuclei_stitched_zarr = da.from_zarr(zarr_nuclei_stitched_filepath)         
+            # nuclei_stitched_zarr = zarr.load(zarr_nuclei_stitched_filepath)   
+            # nuclei_stitched_zarr = zarr.open(zarr_nuclei_stitched_filepath, mode='r')
+
+            max_data_Size = 33766
+            zarr_data_shap = nuclei_stitched_zarr.shape 
+            y_start, y_end = 0, zarr_data_shap[1]
+            x_start, x_end = 0, zarr_data_shap[0]
+            if max(zarr_data_shap)>max_data_Size:
+                # Divide by 4 slices 
+                x_middle, y_middle = int(zarr_data_shap[0]/2), int(zarr_data_shap[1]/2)
+                x_end, y_end = int(zarr_data_shap[0]), int(zarr_data_shap[1])
+
+                for i in range(2):
+                    for j in range(2):
+                        viewer.add_image(
+                            nuclei_stitched_zarr[i*x_middle:(i+1)*x_middle, j*y_middle:(j+1)*y_middle],
+                            name="nuclei_stitched_full_res",
+                            colormap="gray",
+                            blending="additive",
+                            translate=(i*x_middle, j*y_middle),
+                            contrast_limits=(0,33000)
+                        )
+
+            else:
+                viewer.add_image(
+                    nuclei_stitched_zarr,
+                    name="nuclei_stitched_full_res",
+                    colormap="gray",
+                    blending="additive",
+                    contrast_limits=(0,33000)
+                )
         
         for target in gene_list[0:]:
             print(target)
