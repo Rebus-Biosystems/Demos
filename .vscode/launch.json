@@ -14,9 +14,10 @@
             "env": {
                 "PYTHONPATH": "C://Users//Siavash Yousefi//Documents//Repos//Esper_Process//acquisitionQC;C://Users//Siavash Yousefi//Documents//Repos//Esper_Process//starfish;C://Users//Siavash Yousefi//Documents//Repos//Esper_Process//slicedimage;" 
                     },   
-            "args" : ["--rootdir", "C:\\Users\\Siavash Yousefi\\Documents\\Repos\\Demos\\Visualization_demos\\Data\\2021-10-08 Mouse_Heart_30plex"],
+            // "args" : ["--rootdir", "C:\\Users\\Siavash Yousefi\\Documents\\Repos\\Demos\\Visualization_demos\\Data\\2021-10-08 Mouse_Heart_30plex"],
             // "args" : ["--rootdir", "C:\\Users\\Siavash Yousefi\\Documents\\Repos\\Demos\\Visualization_demos\\Data\\2021-10-29 MouseHeartBone 30plex"],
             // "args" : ["--rootdir", "C:\\Users\\Siavash Yousefi\\Documents\\Repos\\Demos\\Visualization_demos\\Data\\211021_K2100233_1 Kun Kidney 2"],
+            "args" : ["--rootdir", "J:\\Data\\HiFi\\UCSF3_Ethan\\Results"],
         }
     ]
 }

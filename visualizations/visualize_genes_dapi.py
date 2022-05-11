@@ -70,7 +70,13 @@ if __name__ == "__main__":
     stitched_image_folder = os.path.join(args.rootdir, "Stitched_images") 
 
     table_files = glob.glob(os.path.join(tables_folder, "*.csv" ))
-    dapi_stitched = (glob.glob(os.path.join(stitched_image_folder, "nuclei_stitched_Cycle_1.tif" )))[0]
+    dapi_stitched = (glob.glob(os.path.join(stitched_image_folder, "nuclei_stitched_Cycle_1.tif" )))
+    if len(dapi_stitched)>1:
+        dapi_stitched = dapi_stitched[0]
+        if not os.path.isfile(dapi_stitched):
+            dapi_stitched = os.path.join(stitched_image_folder, "nuclei_stitched_coarse_cycle_1.tif")
+    else:
+        dapi_stitched = "None" 
 
     gene_list = [Path(table_file).stem for table_file in table_files]
     print(gene_list)
@@ -82,9 +88,6 @@ if __name__ == "__main__":
     with gui_qt():
 
         viewer = Viewer()
-        
-        if not os.path.isfile(dapi_stitched):
-            dapi_stitched = os.path.join(stitched_image_folder, "nuclei_stitched_coarse_cycle_1.tif")
 
         if os.path.isfile(dapi_stitched):
             print("Loading the DAPI image")
@@ -149,6 +152,10 @@ if __name__ == "__main__":
                     coords_selected_df['x'] = results_filtered_df['y']
                 if 'y' in results_filtered_df.columns:
                     coords_selected_df['y'] = results_filtered_df['x']
+                if 'Spot location (X)' in results_filtered_df.columns:
+                    coords_selected_df['x'] = results_filtered_df['Spot location (X)']
+                if 'Spot location (Y)' in results_filtered_df.columns:
+                    coords_selected_df['y'] = results_filtered_df['Spot location (Y)']
                 
                 # Drop the dupilicates
                 coords_selected_df = coords_selected_df.drop_duplicates(subset=['x','y'])
