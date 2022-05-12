@@ -16,12 +16,13 @@ import zarr
 SHOW_FOV_GRID = False           
 image_size_default = 2048
 MIN_CRA_COL_VALUE = 2
-MAX_CRA_COL_VALUE = 10
+MAX_CRA_COL_VALUE = 5
 SHOW_NUCLEI_LOCATIONS = False 
 DISK_SIZE = 1   
 DISK_SIZE_NUCLEI = 4
 SCALE_141 = 4
 IMAGFE_SIZE_DEFAULT = 4928
+max_data_Size = 33766
 DEFAULT_VISIBLE_DOTS = False 
 
 def parse_args():
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 
     table_files = glob.glob(os.path.join(tables_folder, "*.csv" ))
     dapi_stitched = (glob.glob(os.path.join(stitched_image_folder, "nuclei_stitched_Cycle_1.tif" )))
-    if len(dapi_stitched)>1:
+    if len(dapi_stitched)>0:
         dapi_stitched = dapi_stitched[0]
         if not os.path.isfile(dapi_stitched):
             dapi_stitched = os.path.join(stitched_image_folder, "nuclei_stitched_coarse_cycle_1.tif")
@@ -102,11 +103,8 @@ if __name__ == "__main__":
         zarr_nuclei_stitched_filepath = os.path.join(stitched_image_folder, "nuclei_stitched_Cycle_1.zarr")
         if os.path.isdir(zarr_nuclei_stitched_filepath):
             print("Loading the DAPI Zarr image")
-            nuclei_stitched_zarr = da.from_zarr(zarr_nuclei_stitched_filepath)         
-            # nuclei_stitched_zarr = zarr.load(zarr_nuclei_stitched_filepath)   
-            # nuclei_stitched_zarr = zarr.open(zarr_nuclei_stitched_filepath, mode='r')
+            nuclei_stitched_zarr = da.from_zarr(zarr_nuclei_stitched_filepath)
 
-            max_data_Size = 33766
             zarr_data_shap = nuclei_stitched_zarr.shape 
             y_start, y_end = 0, zarr_data_shap[1]
             x_start, x_end = 0, zarr_data_shap[0]
@@ -132,10 +130,9 @@ if __name__ == "__main__":
                     name="nuclei_stitched_full_res",
                     colormap="gray",
                     blending="additive",
-                    contrast_limits=(0,33000)
                 )
         
-        for target in gene_list[0:]:
+        for target in gene_list[0:10]:
             print(target)
             
             target_filename = os.path.join(tables_folder, target + ".csv")
@@ -146,12 +143,20 @@ if __name__ == "__main__":
                     results_filtered_df = results_filtered_df.loc[results_filtered_df['CBR'] > MIN_CRA_COL_VALUE]
                     results_filtered_df = results_filtered_df.loc[results_filtered_df['CBR'] < MAX_CRA_COL_VALUE]
                     results_filtered_df = results_filtered_df.sort_values(by=['CBR'])
+                
+                if 'global_RNA_x' in results_filtered_df:
+                    col_x = 'global_RNA_x'
+                    col_y = 'global_RNA_y'
+                else:
+                    col_x = 'x'
+                    col_y = 'y'
 
                 coords_selected_df = pd.DataFrame()
-                if 'x' in results_filtered_df.columns:
-                    coords_selected_df['x'] = results_filtered_df['y']
-                if 'y' in results_filtered_df.columns:
-                    coords_selected_df['y'] = results_filtered_df['x']
+                if col_x in results_filtered_df.columns:
+                    coords_selected_df['x'] = results_filtered_df[col_y]
+                if col_y in results_filtered_df.columns:
+                    coords_selected_df['y'] = results_filtered_df[col_x]
+                
                 if 'Spot location (X)' in results_filtered_df.columns:
                     coords_selected_df['x'] = results_filtered_df['Spot location (X)']
                 if 'Spot location (Y)' in results_filtered_df.columns:
