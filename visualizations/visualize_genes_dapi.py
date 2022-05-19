@@ -132,7 +132,7 @@ if __name__ == "__main__":
                     blending="additive",
                 )
         
-        for target in gene_list[0:10]:
+        for target in gene_list[0:]:
             print(target)
             
             target_filename = os.path.join(tables_folder, target + ".csv")
